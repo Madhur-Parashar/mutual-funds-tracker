@@ -1,3 +1,8 @@
+import Button from "@mui/material/Button";
+import Card from '@mui/material/Card';
+import NumberInput from "../shared/NumberInput";
+import BasicDatePicker from "../shared/BasicDatePicker";
+import BaseAutoComplete from "../shared/BaseAutoComplete";
 
 export default function HeaderSearch({
   inputValue,
@@ -13,50 +18,53 @@ export default function HeaderSearch({
   setToSIPDate,
   sellDate,
   setSellDate,
+  isMFListLoading,
 }) {
-
+  console.log("mfLIST in Search", mfList);
   return (
-    <div>
-      <label>Search MF</label>
-      <input
-        type="text"
+    <Card sx={{ display: 'flex',width: 'max-content', padding: '24px',margin: '24px auto'}}>
+      <BaseAutoComplete
+        isMFListLoading={isMFListLoading}
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        setInputValue={setInputValue}
+        selectedMFSchemeCode={selectedMFSchemeCode}
+        setSelectedMFSchemeCode={setSelectedMFSchemeCode}
+        mfList={mfList}
       />
-      <select value={selectedMFSchemeCode} onChange={(e)=>setSelectedMFSchemeCode(e.target.value)}>
-        {mfList.map((listItem, index) => (
-          <option
-            key={listItem.schemeCode + index + listItem.schemeName}
-            value={listItem.schemeCode}
-          >
-            {listItem.schemeName}
-          </option>
-        ))}
-      </select>
-      <label>SIP Amount</label>
-      <input
-        type="number"
+      <NumberInput
+        placeholder="Enter your amount"
         value={sipAmount}
-        onChange={(e) => setSipAmount(e.target.value)}
+        onChange={(e) => {
+          console.log("e",e.target.value);
+          if(e.target.value)
+          setSipAmount(Number(e.target.value))
+        }}
       />
-      <label>From SIP Date</label>
-      <input
-        type="date"
+      <BasicDatePicker
         value={fromSIPDate}
-        onChange={(e) => setFromSIPDate(e.target.value)}
+        label="From SIP date"
+        onChange={(date) => {
+          console.log("date", new Date(date));
+          setFromSIPDate(new Date(date));
+        }}
       />
-      <label>To SIP Date</label>
-      <input
-        type="date"
+      <BasicDatePicker
         value={toSIPDate}
-        onChange={(e) => setToSIPDate(e.target.value)}
+        label="To SIP date"
+        onChange={(date) => {
+          console.log("date", new Date(date));
+          setToSIPDate(new Date(date));
+        }}
       />
-      <label>Sell Date</label>
-      <input
-        type="date"
+      {/* <BasicDatePicker
         value={sellDate}
-        onChange={(e) => setSellDate(e.target.value)}
-      />
-    </div>
+        label="Sell date"
+        onChange={(date) => {
+          console.log("date", new Date(date));
+          setSellDate(new Date(date));
+        }}
+      /> */}
+      <Button variant="contained">Search MF</Button>
+    </Card>
   );
 }

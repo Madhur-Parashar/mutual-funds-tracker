@@ -1,6 +1,6 @@
 
 import './App.css';
-import MutualFundsTracker from "../src/mutual-funds-tracker/mutual-funds-tracker"
+import MutualFundsTracker from "./MutualFundsTracker/MutualFundsTracker"
 
 function App() {
 

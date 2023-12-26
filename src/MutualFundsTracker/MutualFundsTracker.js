@@ -5,7 +5,7 @@ import { useDeBounce } from "../hooks/useDebounce";
 import LinkedList from "../utils/linked-list";
 import SearchHeader from "../components/SearchHeader/SearchHeader";
 // const SIPDATES = Array(28).fill('sip')
-const TODAY_DATE = moment();
+// const TODAY_DATE = moment();
 const LAST_YEAR_DATE = moment().subtract(1, "years");
 function MutualFundsTracker() {
   const [inputValue, setInputValue] = useState("");
@@ -13,14 +13,16 @@ function MutualFundsTracker() {
   const [mfList, setMfList] = useState([]);
   const [selectedMFSchemeCode, setSelectedMFSchemeCode] = useState("");
   const [historicalNav, setHistoricalNav] = useState([]);
-  const [sipAmount, setSipAmount] = useState("");
+  const [sipAmount, setSipAmount] = useState(null);
   const [historicalNavLinkedList, setHistoricalNavLinkedList] = useState(null);
   const [filterHistoricalNav, setFilterHistoricalNav] = useState([]);
-  const [fromSIPDate, setFromSIPDate] = useState("");
-  const [toSIPDate, setToSIPDate] = useState("");
-  const [sellDate, setSellDate] = useState("");
+  const [fromSIPDate, setFromSIPDate] = useState(null);
+  const [toSIPDate, setToSIPDate] = useState(null);
+  const [sellDate, setSellDate] = useState(null);
 
   console.log("seachedMF", seachedMF);
+  console.log("From to sell",fromSIPDate,toSIPDate,sellDate);
+  console.log("moment From to sell",moment(fromSIPDate),moment(toSIPDate),moment(sellDate))
   useEffect(() => {
     let isLoading = true;
     async function fetchData() {
@@ -45,10 +47,6 @@ function MutualFundsTracker() {
       isLoading = false;
     };
   }, [seachedMF]);
-  const handleSelectListItem = (e) => {
-    console.log("e", e.target.value);
-    setSelectedMFSchemeCode(e.target.value);
-  };
   useEffect(() => {
     let isLoading = true;
     async function fetchHistoricalNav() {
@@ -86,26 +84,7 @@ function MutualFundsTracker() {
       let ptr = linkedList.head;
       while (ptr.nextPtr !== null) {
         console.log("date", ptr.value.date);
-        console.log(
-          "currentSIPDate",
-          moment(currentSIPDate).format("DD-MM-YYYY")
-        );
-        console.log(
-          "check",
-          ptr.value.date === moment(currentSIPDate).format("DD-MM-YYYY")
-        );
-        console.log(
-          "moment(ptr.value.date",
-          moment(ptr.value.date, "DD-MM-YYYY").get("date")
-        );
-        console.log("fromSIPDate", fromSIPDate);
-        console.log("toSIPDate", toSIPDate);
-        console.log(
-          'moment(toSIPDate,"DD-MM-YYYY").diff(moment(ptr.value.date,"DD-MM-YYYY"))',
-          moment(toSIPDate, "DD-MM-YYYY").diff(
-            moment(ptr.value.date, "DD-MM-YYYY")
-          )
-        );
+   
         if (
           moment(toSIPDate, "YYYY-MM-DD").diff(
             moment(ptr.value.date, "DD-MM-YYYY")
@@ -121,10 +100,6 @@ function MutualFundsTracker() {
           );
           console.log("filterHistoricalNavs", filterHistoricalNavs);
         }
-        console.log(
-          'moment(ptr.value.date,"DD-MM-YYYY").diff(moment(currentSIPDate))',
-          moment(ptr.value.date, "DD-MM-YYYY").diff(moment(currentSIPDate))
-        );
         ptr = ptr.nextPtr;
       }
       setFilterHistoricalNav(filterHistoricalNavs);
