@@ -1,8 +1,8 @@
 import Button from "@mui/material/Button";
 import Card from '@mui/material/Card';
-import NumberInput from "../shared/NumberInput";
 import BasicDatePicker from "../shared/BasicDatePicker";
 import BaseAutoComplete from "../shared/BaseAutoComplete";
+import TextField from '@mui/material/TextField';
 
 export default function HeaderSearch({
   inputValue,
@@ -22,7 +22,7 @@ export default function HeaderSearch({
 }) {
   console.log("mfLIST in Search", mfList);
   return (
-    <Card sx={{ display: 'flex',width: 'max-content', padding: '24px',margin: '24px auto'}}>
+    <Card sx={{ display: 'flex',width: 1250,justifyContent:'center', padding: '24px',margin: '24px auto', minWidth:1200 }}>
       <BaseAutoComplete
         isMFListLoading={isMFListLoading}
         value={inputValue}
@@ -31,13 +31,16 @@ export default function HeaderSearch({
         setSelectedMFSchemeCode={setSelectedMFSchemeCode}
         mfList={mfList}
       />
-      <NumberInput
-        placeholder="Enter your amount"
+      <TextField
+        className="custom-text-input-class"
+        type={"number"}
+        label="Enter your amount"
         value={sipAmount}
         onChange={(e) => {
           console.log("e",e.target.value);
           if(e.target.value)
           setSipAmount(Number(e.target.value))
+          setSipAmount((e.target.value))
         }}
       />
       <BasicDatePicker
@@ -56,15 +59,15 @@ export default function HeaderSearch({
           setToSIPDate(new Date(date));
         }}
       />
-      {/* <BasicDatePicker
+      <BasicDatePicker
         value={sellDate}
         label="Sell date"
         onChange={(date) => {
           console.log("date", new Date(date));
           setSellDate(new Date(date));
         }}
-      /> */}
-      <Button variant="contained">Search MF</Button>
+      />
+      <Button variant="contained" sx={{'borderRadius':'unset'}}>Search MF</Button>
     </Card>
   );
 }

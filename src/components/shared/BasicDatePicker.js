@@ -9,6 +9,7 @@ export default function BasicDatePicker(props) {
       <DatePicker
         {...props}
         format="MM/DD/YYYY"
+        className='custom-text-input-class'
       />
     </LocalizationProvider>
   );

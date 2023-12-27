@@ -28,6 +28,7 @@ export default function BaseAutoComplete({isMFListLoading,value,setInputValue,mf
             setInputValue(event.target.value);
           }}
           value={value}
+          className="custom-text-input-class"
           InputProps={{
             ...params.InputProps,
             endAdornment: (

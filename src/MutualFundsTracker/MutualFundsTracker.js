@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useDeBounce } from "../hooks/useDebounce";
 import LinkedList from "../utils/linked-list";
 import SearchHeader from "../components/SearchHeader/SearchHeader";
+import CustomizedTables from "../components/shared/CustomizedTable";
+import InvestmentCard from "../components/InvestmentCard/InvestmentCard";
 // const SIPDATES = Array(28).fill('sip')
 // const TODAY_DATE = moment();
 const LAST_YEAR_DATE = moment().subtract(1, "years");
@@ -12,8 +14,9 @@ function MutualFundsTracker() {
   const seachedMF = useDeBounce(inputValue, 1000);
   const [mfList, setMfList] = useState([]);
   const [selectedMFSchemeCode, setSelectedMFSchemeCode] = useState("");
+  const [selectedMFScheme, setSelectedMFScheme] = useState({schemeCode:"",schemeName:""});
   const [historicalNav, setHistoricalNav] = useState([]);
-  const [sipAmount, setSipAmount] = useState(null);
+  const [sipAmount, setSipAmount] = useState("");
   const [historicalNavLinkedList, setHistoricalNavLinkedList] = useState(null);
   const [filterHistoricalNav, setFilterHistoricalNav] = useState([]);
   const [fromSIPDate, setFromSIPDate] = useState(null);
@@ -21,8 +24,13 @@ function MutualFundsTracker() {
   const [sellDate, setSellDate] = useState(null);
 
   console.log("seachedMF", seachedMF);
-  console.log("From to sell",fromSIPDate,toSIPDate,sellDate);
-  console.log("moment From to sell",moment(fromSIPDate),moment(toSIPDate),moment(sellDate))
+  console.log("From to sell", fromSIPDate, toSIPDate, sellDate);
+  console.log(
+    "moment From to sell",
+    moment(fromSIPDate),
+    moment(toSIPDate),
+    moment(sellDate)
+  );
   useEffect(() => {
     let isLoading = true;
     async function fetchData() {
@@ -38,6 +46,7 @@ function MutualFundsTracker() {
         setMfList(mfData);
         if (mfData[0]) {
           setSelectedMFSchemeCode(mfData[0].schemeCode);
+          setSelectedMFScheme(mfData[0])
           console.log("mfData[0].schemeCode", mfData[0].schemeCode);
         }
       }
@@ -84,7 +93,7 @@ function MutualFundsTracker() {
       let ptr = linkedList.head;
       while (ptr.nextPtr !== null) {
         console.log("date", ptr.value.date);
-   
+
         if (
           moment(toSIPDate, "YYYY-MM-DD").diff(
             moment(ptr.value.date, "DD-MM-YYYY")
@@ -181,34 +190,7 @@ function MutualFundsTracker() {
   }
   return (
     <div className="App">
-      <main>
-        {/* <div>
-           <label>
-              Search MF
-           </label>
-           <input type="text" value={inputValue} onChange={e=> setInputValue(e.target.value)}/>
-           <select value={selectedMFSchemeCode} onChange={handleSelectListItem} >
-            {mfList.map((listItem,index)=><option key={listItem.schemeCode+index+listItem.schemeName} value={listItem.schemeCode}>
-                {listItem.schemeName}
-              </option>)}
-           </select>
-           <label>
-              SIP Amount
-           </label>
-           <input type="number" value={sipAmount} onChange={e=> setSipAmount(e.target.value)}/>
-            <label>
-              From SIP Date
-           </label>
-           <input type="date" value={fromSIPDate} onChange={e=> setFromSIPDate(e.target.value)}/>
-           <label>
-              To SIP Date
-           </label>
-           <input type="date" value={toSIPDate} onChange={e=> setToSIPDate(e.target.value)}/>
-           <label>
-              Sell Date
-           </label>
-           <input type="date" value={sellDate} onChange={e=> setSellDate(e.target.value)}/>
-        </div> */}
+      <main className="mutual-fund-tracker-main">
         <SearchHeader
           inputValue={inputValue}
           setInputValue={setInputValue}
@@ -224,48 +206,29 @@ function MutualFundsTracker() {
           sellDate={sellDate}
           setSellDate={setSellDate}
         />
+        <InvestmentCard
+          totalInvestment={totalInvestment}
+          totalUnits={mfUnits.totalUnits}
+          ltcgUnits={mfUnits.ltcgUnits}
+          stcgUnits={mfUnits.stcgUnits}
+          totalProfit={totalProfit}
+          totalLTCG={totalLTCG}
+          totalSTCG={totalSTCG}
+          isSellUnits={Boolean(moment(sellDate).isValid())}
+        />
         <div>
-          <div>
-            Total Investments: <span>{totalInvestment}</span>
-          </div>
-          <div>
-            Total units: <span>{mfUnits.totalUnits}</span>
-          </div>
-          <div>
-            Total LTCG units: <span>{mfUnits.ltcgUnits}</span>
-          </div>
-          <div>
-            Total STCG units: <span>{mfUnits.stcgUnits}</span>
-          </div>
-          <div>
-            Total profit: <span>{totalProfit}</span>
-          </div>
-          <div>
-            Total LTCG: <span>{totalLTCG}</span>
-          </div>
-          <div>
-            Total STCG: <span>{totalSTCG}</span>
-          </div>
-          <table style={{ width: "100%" }}>
-            <tbody>
-              <tr>
-                <th width="25%">S.No</th>
-                <th width="25%">NAV date</th>
-                <th width="25%">Net Asset Value</th>
-                <th width="25%">Units Purchased</th>
-              </tr>
-              {filterHistoricalNav.map((listItem, index) => {
-                return (
-                  <tr key={listItem.date}>
-                    <td>{index + 1}</td>
-                    <td>{listItem.date}</td>
-                    <td>{listItem.nav}</td>
-                    <td>{Number(sipAmount / listItem.nav)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          {filterHistoricalNav.length > 0 ? (
+            <CustomizedTables
+              filterHistoricalNav={filterHistoricalNav}
+              sipAmount={sipAmount}
+              tableHeadRows={[
+                "Mutual fund name",
+                "NAV date",
+                "Net Asset Value",
+                "Units Purchased",
+              ]}
+            />
+          ) : null}
         </div>
       </main>
     </div>
