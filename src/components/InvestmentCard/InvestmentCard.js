@@ -22,35 +22,43 @@ export default function InvestmentCard({
         minWidth: 1200,
       }}
     >
-      <div class="calc-wrapper__result">
+      <div className="calc-wrapper__result">
         <ul>
           <li>
-            <span class="invested"></span>
+            <span className="invested"></span>
             Invested Amount
           </li>
-          <li id="TotalInvestment">₹{totalInvestment}</li>
+          <li id="TotalInvestment">₹{(totalInvestment && totalInvestment.toFixed(2))|| 0}</li>
         </ul>
         <ul>
           <li>Total units alloted</li>
-          <li id="total_units">{totalUnits}</li>
+          <li id="total_units">{(totalUnits && totalUnits.toFixed(2)) || 0}</li>
         </ul>
 
         {isSellUnits ? (
           <>
             <ul>
               <li>
-                <span class="wealth"></span>
+                <span className="wealth"></span>
                 Wealth Gained
               </li>
-              <li id="gained">₹{totalProfit}</li>
+              <li id="gained">₹{totalProfit && totalProfit.toFixed(2)}</li>
             </ul>
             <ul>
-              <li>Total long term capital gain</li>
-              <li id="total_units">₹{totalLTCG}</li>
+              <li>LTCG gain</li>
+              <li id="total_units">₹{totalLTCG && totalLTCG.toFixed(2)}</li>
             </ul>
             <ul>
-              <li>Total short term capital gain</li>
-              <li id="total_units">₹{totalSTCG}</li>
+              <li>STCG gain</li>
+              <li id="total_units">₹{totalSTCG && totalSTCG.toFixed(2)}</li>
+            </ul>
+            <ul>
+              <li>LTCG units</li>
+              <li id="total_units">₹{ltcgUnits && ltcgUnits.toFixed(2)}</li>
+            </ul>
+            <ul>
+              <li>STCG units</li>
+              <li id="total_units">₹{stcgUnits && stcgUnits.toFixed(2)}</li>
             </ul>
           </>
         ) : null}

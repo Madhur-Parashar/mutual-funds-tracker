@@ -30,7 +30,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function CustomizedTables({filterHistoricalNav,tableHeadRows,sipAmount}) {
   return (
-    <TableContainer component={Paper} >
+    <TableContainer component={Paper}>
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
@@ -43,11 +43,11 @@ export default function CustomizedTables({filterHistoricalNav,tableHeadRows,sipA
           {filterHistoricalNav.map((row,index) => (
             <StyledTableRow key={index}>
               <StyledTableCell component="th" scope="row">
-                'Mirae asset'
+                {row.schemeName}
               </StyledTableCell>
               <StyledTableCell align="right">{row.date}</StyledTableCell>
-              <StyledTableCell align="right">{row.nav}</StyledTableCell>
-              <StyledTableCell align="right">{Number(sipAmount / row.nav)}</StyledTableCell>
+              <StyledTableCell align="right">{row.nav && Number(row.nav).toFixed(3)}</StyledTableCell>
+              <StyledTableCell align="right">{row.nav && Number(sipAmount / row.nav).toFixed(3)}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
