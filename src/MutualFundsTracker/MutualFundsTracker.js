@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import { useState } from "react";
+import { useState,useCallback } from "react";
 import LinkedList from "../utils/linked-list";
 import SearchHeader from "../components/SearchHeader/SearchHeader";
 import CustomizedTables from "../components/shared/CustomizedTable";
@@ -23,12 +23,12 @@ function MutualFundsTracker() {
     schemeName,
     fromSIPDate,
     toSIPDate,
-    linkedList
+    historicalNavlinkedList
   ) => {
-    console.log("linkedList", linkedList);
+    console.log("linkedList", historicalNavlinkedList);
     let filterHistoricalNavs = [];
     let currentSIPDate = moment(fromSIPDate, "YYYY-MM-DD");
-    let ptr = linkedList.head;
+    let ptr = historicalNavlinkedList.head;
     while (ptr.nextPtr !== null) {
       console.log("date", ptr.value.date);
       if (
@@ -99,7 +99,7 @@ function MutualFundsTracker() {
 
   const calculateTotalInvestment = (
     filterHistoricalNavs,
-    linkedList,
+    historicalNavlinkedList,
     historicalNav,
     sellDate,
     amount,
@@ -112,7 +112,7 @@ function MutualFundsTracker() {
     let totalSTCG = 0;
     if (filterHistoricalNavs.length > 0) {
       let buyNAV;
-      let ptr = linkedList.head;
+      let ptr = historicalNavlinkedList.head;
       while (ptr.nextPtr !== null && sellDate) {
         if (
           ptr.value.date === moment(SELL_DATE).format("DD-MM-YYYY") ||
@@ -140,7 +140,7 @@ function MutualFundsTracker() {
     }
   };
 
-  const handleOnSearch = async ({
+  const handleOnSearch = useCallback(async ({
     amount,
     mfList,
     selectedMFScheme,
@@ -188,7 +188,7 @@ function MutualFundsTracker() {
       amount,
       selectedMFSchemeName: selectedMFScheme.schemeName,
     });
-  };
+  },[]);
   async function fetchHistoricalNav(selectedMFSchemeCode) {
     let response = await fetch(
       `https://api.mfapi.in/mf/${selectedMFSchemeCode}`

@@ -3,10 +3,10 @@ import Card from "@mui/material/Card";
 import BasicDatePicker from "../shared/BasicDatePicker";
 import BaseAutoComplete from "../shared/BaseAutoComplete";
 import TextField from "@mui/material/TextField";
-import { useEffect, useState } from "react";
+import { useEffect, useState,memo } from "react";
 import { useDeBounce } from "../../hooks/useDebounce";
 
-export default function HeaderSearch({ onSearchHandler }) {
+export default memo(function HeaderSearch({ onSearchHandler }) {
   const [inputValue, setInputValue] = useState("");
   const seachedMF = useDeBounce(inputValue, 1000);
   const [mfList, setMfList] = useState([]);
@@ -123,3 +123,4 @@ export default function HeaderSearch({ onSearchHandler }) {
     </Card>
   );
 }
+)
