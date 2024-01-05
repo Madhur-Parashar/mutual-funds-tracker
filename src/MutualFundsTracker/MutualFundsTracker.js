@@ -273,8 +273,7 @@ function MutualFundsTracker() {
       ]
     : [];
   console.log("tableMFListData", tableMFListData);
-  const openNavHistoryModal = (e) => {
-    e.preventDefault();
+  const openNavHistoryModal = ({schemeCode}) => {
     setShowNavHistoryModal(true);
   };
   const handleModalClose = () => {

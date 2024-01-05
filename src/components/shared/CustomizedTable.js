@@ -1,4 +1,3 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -60,7 +59,7 @@ export default function CustomizedTables({
             <TableRowComponent key={index}>
               {row.heading ? <TableCellComponent component="th" scope="row">
                 {isHeadingLink ? (
-                  <a href="/" onClick={onClickHeadingLink}>
+                  <a href="/" onClick={(e)=>{e.preventDefault();onClickHeadingLink(row)}}>
                     {row.heading}
                   </a>
                 ) : (
