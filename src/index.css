@@ -63,3 +63,7 @@ code {
  .calc-wrapper__result ul:last-child:after {
   content: none
 }
+.calc-wrapper__result ul li:first-child{
+  font-weight: 600;
+  padding-bottom: 4px;
+}

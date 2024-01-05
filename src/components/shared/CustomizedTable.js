@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import * as React from "react";
+import { styled } from "@mui/material/styles";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -19,36 +19,50 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
+  "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
   // hide last border
-  '&:last-child td, &:last-child th': {
+  "&:last-child td, &:last-child th": {
     border: 0,
   },
 }));
 
-export default function CustomizedTables({filterHistoricalNav,tableHeadRows,sipAmount}) {
+export default function CustomizedTables({
+  tableRowData,
+  tableHeadRows,
+  isCustomized
+}) {
+  const TableRowComponent = isCustomized ? StyledTableRow : TableRow;
+  const TableCellComponent = isCustomized ? StyledTableCell : TableCell;
   return (
     <TableContainer component={Paper}>
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
-          <TableRow>
-          {tableHeadRows.map((row,index) => (
-             <StyledTableCell align={index===0 ? 'left' : "right"} key={index}>{row}</StyledTableCell>
-          ))}
-          </TableRow>
+          <TableRowComponent>
+            {tableHeadRows.map((row, index) => (
+              <TableCellComponent
+                align={index === 0 ? "left" : "right"}
+                key={index}
+                sx={{
+                  'fontWeight': '600'
+                }}
+              >
+                {row}
+              </TableCellComponent>
+            ))}
+          </TableRowComponent>
         </TableHead>
         <TableBody>
-          {filterHistoricalNav.map((row,index) => (
-            <StyledTableRow key={index}>
-              <StyledTableCell component="th" scope="row">
-                {row.schemeName}
-              </StyledTableCell>
-              <StyledTableCell align="right">{row.date}</StyledTableCell>
-              <StyledTableCell align="right">{row.nav && Number(row.nav).toFixed(3)}</StyledTableCell>
-              <StyledTableCell align="right">{row.nav && Number(sipAmount / row.nav).toFixed(3)}</StyledTableCell>
-            </StyledTableRow>
+          {tableRowData.map((row, index) => (
+            <TableRowComponent key={index}>
+              <TableCellComponent component="th" scope="row">
+                {row.heading}
+              </TableCellComponent>
+              {row.rowData.map((row) => (
+                <TableCellComponent key={row} align="right">{row}</TableCellComponent>
+              ))}
+            </TableRowComponent>
           ))}
         </TableBody>
       </Table>
