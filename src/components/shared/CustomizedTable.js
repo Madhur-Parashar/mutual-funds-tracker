@@ -31,12 +31,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function CustomizedTables({
   tableRowData,
   tableHeadRows,
-  isCustomized
+  isCustomized,
+  onClickHeadingLink,
+  isHeadingLink
 }) {
   const TableRowComponent = isCustomized ? StyledTableRow : TableRow;
   const TableCellComponent = isCustomized ? StyledTableCell : TableCell;
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ maxHeight: 520 }}>
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRowComponent>
@@ -45,7 +47,7 @@ export default function CustomizedTables({
                 align={index === 0 ? "left" : "right"}
                 key={index}
                 sx={{
-                  'fontWeight': '600'
+                  fontWeight: "600",
                 }}
               >
                 {row}
@@ -56,11 +58,19 @@ export default function CustomizedTables({
         <TableBody>
           {tableRowData.map((row, index) => (
             <TableRowComponent key={index}>
-              <TableCellComponent component="th" scope="row">
-                {row.heading}
-              </TableCellComponent>
+              {row.heading ? <TableCellComponent component="th" scope="row">
+                {isHeadingLink ? (
+                  <a href="/" onClick={onClickHeadingLink}>
+                    {row.heading}
+                  </a>
+                ) : (
+                  <>{row.heading}</>
+                )}
+              </TableCellComponent> : null}
               {row.rowData.map((row) => (
-                <TableCellComponent key={row} align="right">{row}</TableCellComponent>
+                <TableCellComponent key={row} align="right">
+                  {row}
+                </TableCellComponent>
               ))}
             </TableRowComponent>
           ))}

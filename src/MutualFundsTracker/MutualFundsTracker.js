@@ -1,6 +1,8 @@
 import moment from "moment";
 
 import { useState, useCallback } from "react";
+import Modal from "@mui/material/Modal";
+import Box from '@mui/material/Box';
 import LinkedList from "../utils/linked-list";
 import SearchHeader from "../components/SearchHeader/SearchHeader";
 import CustomizedTables from "../components/shared/CustomizedTable";
@@ -8,12 +10,23 @@ import InvestmentCard from "../components/InvestmentCard/InvestmentCard";
 
 const LAST_YEAR_DATE = moment().subtract(1, "years");
 const LAST_FY_YEAR_MONTHS = [0, 1, 2]; // January, Feburary, March
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 942,
+  height: 500,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+};
 function MutualFundsTracker() {
   const [filterHistoricalNav, setFilterHistoricalNav] = useState([]);
+  const [showNavHistoryModal, setShowNavHistoryModal] = useState(false);
   const [isSellUnits, setIsSellUnits] = useState(false);
   const [mfInvestmentsData, setMfInvestmentsData] = useState({
     sipAmount: 0,
-    currentValue:0,
+    currentValue: 0,
     totalProfit: 0,
     totalLTCG: 0,
     totalSTCG: 0,
@@ -249,24 +262,32 @@ function MutualFundsTracker() {
           rowData: [
             `₹${mfInvestmentsData.sipAmount}`,
             `₹${mfInvestmentsData.totalInvestment}`,
-            `₹${(mfInvestmentsData.currentValue).toFixed(3)}`,
+            `₹${mfInvestmentsData.currentValue.toFixed(3)}`,
             Number(mfInvestmentsData.mfUnits.totalUnits).toFixed(3),
             mfInvestmentsData.fromSIPDate,
             mfInvestmentsData.toSIPDate,
             mfInvestmentsData.sellDate,
-            mfInvestmentsData.financialYear
+            mfInvestmentsData.financialYear,
           ],
         },
       ]
     : [];
   console.log("tableMFListData", tableMFListData);
+  const openNavHistoryModal = (e) => {
+    e.preventDefault();
+    setShowNavHistoryModal(true);
+  };
+  const handleModalClose = () => {
+    setShowNavHistoryModal(false);
+  };
+
   return (
     <div className="App">
       <main className="mutual-fund-tracker-main">
         <SearchHeader onSearchHandler={handleOnSearch} />
         <InvestmentCard
           totalInvestment={mfInvestmentsData.totalInvestment}
-          totalValue ={mfInvestmentsData.currentValue}
+          totalValue={mfInvestmentsData.currentValue}
           totalUnits={
             mfInvestmentsData.mfUnits && mfInvestmentsData.mfUnits.totalUnits
           }
@@ -285,6 +306,8 @@ function MutualFundsTracker() {
           {tableMFListData.length > 0 ? (
             <CustomizedTables
               tableRowData={tableMFListData}
+              isHeadingLink={true}
+              onClickHeadingLink={openNavHistoryModal}
               tableHeadRows={[
                 "Mutual fund name",
                 "SIP Amount",
@@ -294,15 +317,22 @@ function MutualFundsTracker() {
                 "From Date",
                 "To Date",
                 "Sell Date",
-                "FY"
+                "FY",
               ]}
             />
           ) : null}
         </div>
-        {/* <div>
-          {filterHistoricalNav.length > 0 ? (
+        <div>
+          <Modal
+            open={showNavHistoryModal && filterHistoricalNav.length > 0}
+            onClose={handleModalClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+          <Box sx={modalStyle}>
             <CustomizedTables
-              filterHistoricalNav={filterHistoricalNav}
+              isCustomized={true}
+              tableRowData={filterHistoricalNav}
               tableHeadRows={[
                 "Mutual fund name",
                 "NAV date",
@@ -310,8 +340,9 @@ function MutualFundsTracker() {
                 "Units Purchased",
               ]}
             />
-          ) : null}
-        </div> */}
+             </Box>
+          </Modal>
+        </div>
       </main>
     </div>
   );
