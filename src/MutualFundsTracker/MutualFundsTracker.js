@@ -2,43 +2,29 @@ import moment from "moment";
 
 import { useState, useCallback } from "react";
 import Modal from "@mui/material/Modal";
-import Box from '@mui/material/Box';
+import Box from "@mui/material/Box";
 import LinkedList from "../utils/linked-list";
 import SearchHeader from "../components/SearchHeader/SearchHeader";
 import CustomizedTables from "../components/shared/CustomizedTable";
 import InvestmentCard from "../components/InvestmentCard/InvestmentCard";
 
-const LAST_YEAR_DATE = moment().subtract(1, "years");
+const LAST_YEAR_DATE = moment().subtract(3, "years");
 const LAST_FY_YEAR_MONTHS = [0, 1, 2]; // January, Feburary, March
 const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 942,
   height: 500,
-  bgcolor: 'background.paper',
+  bgcolor: "background.paper",
   boxShadow: 24,
 };
 function MutualFundsTracker() {
-  const [filterHistoricalNav, setFilterHistoricalNav] = useState([]);
+  const [selectedHistoricalNav, setSelectedHistoricalNav] = useState([]);
   const [showNavHistoryModal, setShowNavHistoryModal] = useState(false);
   const [isSellUnits, setIsSellUnits] = useState(false);
-  const [mfInvestmentsData, setMfInvestmentsData] = useState({
-    sipAmount: 0,
-    currentValue: 0,
-    totalProfit: 0,
-    totalLTCG: 0,
-    totalSTCG: 0,
-    totalInvestment: 0,
-    mfUnits: null,
-    selectedMFSchemeName: "",
-    financialYear: "",
-    fromSIPDate: null,
-    toSIPDate: null,
-    sellDate: null,
-  });
-
+  const [mfInvestmentsData, setMfInvestmentsData] = useState([]);
   const calculateFilteredHistoricalNavs = (
     schemeName,
     fromSIPDate,
@@ -200,7 +186,7 @@ function MutualFundsTracker() {
         linkedList,
         amount
       );
-      setFilterHistoricalNav(filterHistoricalNavs);
+      setSelectedHistoricalNav(filterHistoricalNavs);
       let mfUnits = calculateMFUnits(filterHistoricalNavs, amount, sellDate);
       console.log("MFUNITS", mfUnits);
       let { totalProfit, totalLTCG, totalSTCG, totalInvestment, currentValue } =
@@ -226,21 +212,26 @@ function MutualFundsTracker() {
           .year()}-${moment(sellDate).year()}`;
       }
       console.log("financialYear", financialYear);
-      setMfInvestmentsData({
-        sipAmount: amount,
-        totalProfit,
-        totalLTCG,
-        totalSTCG,
-        totalInvestment,
-        mfUnits,
-        amount,
-        selectedMFSchemeName: selectedMFScheme.schemeName,
-        financialYear: financialYear,
-        currentValue,
-        fromSIPDate: moment(fromSIPDate).format("DD-MM-YYYY"),
-        toSIPDate: moment(toSIPDate).format("DD-MM-YYYY"),
-        sellDate: moment(sellDate).format("DD-MM-YYYY"),
-      });
+      setMfInvestmentsData((mfData) => [
+        ...mfData,
+        {
+          totalProfit,
+          totalLTCG,
+          totalSTCG,
+          totalInvestment,
+          mfUnits,
+          amount,
+          selectedMFSchemeName: selectedMFScheme.schemeName,
+          schemeCode: selectedMFScheme.schemeCode,
+          financialYear: financialYear,
+          currentValue,
+          index:mfData.length+1,
+          fromSIPDate: moment(fromSIPDate).format("DD-MM-YYYY"),
+          toSIPDate: moment(toSIPDate).format("DD-MM-YYYY"),
+          sellDate: moment(sellDate).format("DD-MM-YYYY"),
+          hisorticalNav: filterHistoricalNavs,
+        },
+      ]);
     },
     []
   );
@@ -255,25 +246,63 @@ function MutualFundsTracker() {
     return [];
   }
 
-  const tableMFListData = mfInvestmentsData.mfUnits
-    ? [
-        {
-          heading: mfInvestmentsData.selectedMFSchemeName,
-          rowData: [
-            `₹${mfInvestmentsData.sipAmount}`,
-            `₹${mfInvestmentsData.totalInvestment}`,
-            `₹${mfInvestmentsData.currentValue.toFixed(3)}`,
-            Number(mfInvestmentsData.mfUnits.totalUnits).toFixed(3),
-            mfInvestmentsData.fromSIPDate,
-            mfInvestmentsData.toSIPDate,
-            mfInvestmentsData.sellDate,
-            mfInvestmentsData.financialYear,
-          ],
-        },
-      ]
-    : [];
+  const tableMFListData =
+    mfInvestmentsData.length > 0
+      ? mfInvestmentsData.reduce((acc, item) => {
+          acc = acc.concat({
+            heading: item.selectedMFSchemeName,
+            rowData: [
+              // `₹${item.amount}`,
+              `₹${item.totalInvestment}`,
+              `₹${item.currentValue.toFixed(2)}`,
+              Number(item.mfUnits.totalUnits).toFixed(3),
+              item.fromSIPDate,
+              item.toSIPDate,
+              item.sellDate,
+              item.totalLTCG.toFixed(2),
+              item.totalSTCG.toFixed(2),
+              item.financialYear,
+            ],
+            ...item
+          });
+          return acc;
+        }, [])
+      : [];
+  const InvestmentCardData = mfInvestmentsData.reduce(
+    (acc, item) => {
+      acc.totalInvestment = acc.totalInvestment + Number(item.totalInvestment);
+      acc.currentValue = acc.currentValue + Number(item.currentValue);
+      acc.totalUnits =
+        acc.totalUnits + Number((item.mfUnits && item.mfUnits.totalUnits) || 0);
+      acc.ltcgUnits =
+        acc.ltcgUnits + Number((item.mfUnits && item.mfUnits.ltcgUnits) || 0);
+      acc.stcgUnits =
+        acc.stcgUnits + Number((item.mfUnits && item.mfUnits.stcgUnits) || 0);
+      acc.totalProfit = acc.totalProfit + Number(item.totalProfit);
+      acc.totalLTCG = acc.totalLTCG + Number(item.totalLTCG);
+      acc.totalSTCG = acc.totalSTCG + Number(item.totalSTCG);
+      return acc;
+    },
+    {
+      totalInvestment: 0,
+      currentValue: 0,
+      totalUnits: 0,
+      ltcgUnits: 0,
+      stcgUnits: 0,
+      totalProfit: 0,
+      totalLTCG: 0,
+      totalSTCG: 0,
+    }
+  );
   console.log("tableMFListData", tableMFListData);
-  const openNavHistoryModal = ({schemeCode}) => {
+  console.log("InvestmentCardData", InvestmentCardData);
+  const openNavHistoryModal = ({ schemeCode,index }) => {
+    console.log("schemeCode",schemeCode);
+    let mf = mfInvestmentsData.find(item=> item.schemeCode === schemeCode && index ===item.index);
+    if(mf){
+      console.log("mf.hisorticalNav",mf.hisorticalNav)
+      setSelectedHistoricalNav(mf.hisorticalNav)
+    }
     setShowNavHistoryModal(true);
   };
   const handleModalClose = () => {
@@ -285,20 +314,11 @@ function MutualFundsTracker() {
       <main className="mutual-fund-tracker-main">
         <SearchHeader onSearchHandler={handleOnSearch} />
         <InvestmentCard
-          totalInvestment={mfInvestmentsData.totalInvestment}
-          totalValue={mfInvestmentsData.currentValue}
-          totalUnits={
-            mfInvestmentsData.mfUnits && mfInvestmentsData.mfUnits.totalUnits
-          }
-          ltcgUnits={
-            mfInvestmentsData.mfUnits && mfInvestmentsData.mfUnits.ltcgUnits
-          }
-          stcgUnits={
-            mfInvestmentsData.mfUnits && mfInvestmentsData.mfUnits.stcgUnits
-          }
-          totalProfit={mfInvestmentsData.totalProfit}
-          totalLTCG={mfInvestmentsData.totalLTCG}
-          totalSTCG={mfInvestmentsData.totalSTCG}
+          totalInvestment={InvestmentCardData.totalInvestment}
+          totalValue={InvestmentCardData.currentValue}
+          totalProfit={InvestmentCardData.totalProfit}
+          totalLTCG={InvestmentCardData.totalLTCG}
+          totalSTCG={InvestmentCardData.totalSTCG}
           isSellUnits={isSellUnits}
         />
         <div>
@@ -309,37 +329,39 @@ function MutualFundsTracker() {
               onClickHeadingLink={openNavHistoryModal}
               tableHeadRows={[
                 "Mutual fund name",
-                "SIP Amount",
+                // "SIP Amount",
                 "Invested",
-                "Current Value",
-                "Units Alloted",
+                "Value",
+                "Units",
                 "From Date",
                 "To Date",
                 "Sell Date",
-                "FY",
+                "LTCG",
+                "STCG",
+                "FY"
               ]}
             />
           ) : null}
         </div>
         <div>
           <Modal
-            open={showNavHistoryModal && filterHistoricalNav.length > 0}
+            open={showNavHistoryModal && selectedHistoricalNav.length > 0}
             onClose={handleModalClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-          <Box sx={modalStyle}>
-            <CustomizedTables
-              isCustomized={true}
-              tableRowData={filterHistoricalNav}
-              tableHeadRows={[
-                "Mutual fund name",
-                "NAV date",
-                "Net Asset Value",
-                "Units Purchased",
-              ]}
-            />
-             </Box>
+            <Box sx={modalStyle}>
+              <CustomizedTables
+                isCustomized={true}
+                tableRowData={selectedHistoricalNav}
+                tableHeadRows={[
+                  "Mutual fund name",
+                  "NAV date",
+                  "Net Asset Value",
+                  "Units Purchased",
+                ]}
+              />
+            </Box>
           </Modal>
         </div>
       </main>

@@ -118,7 +118,7 @@ export default memo(function HeaderSearch({ onSearchHandler }) {
           })
         }
       >
-        Search MF
+        Add MF
       </Button>
     </Card>
   );

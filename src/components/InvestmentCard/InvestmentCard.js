@@ -3,9 +3,6 @@ import Card from "@mui/material/Card";
 
 export default function InvestmentCard({
   totalInvestment,
-  totalUnits,
-  ltcgUnits,
-  stcgUnits,
   totalProfit,
   totalLTCG,
   totalSTCG,
@@ -42,27 +39,27 @@ export default function InvestmentCard({
               <li id="gained">₹{totalProfit && totalProfit.toFixed(2)}</li>
             </ul>
             <ul>
-              <li>LT gain/loss</li>
+              <li>Total LT gain/loss</li>
               <li id="total_units">₹{totalLTCG && totalLTCG.toFixed(2)}</li>
             </ul>
             <ul>
-              <li>ST gain/loss</li>
+              <li>Total ST gain/loss</li>
               <li id="total_units">₹{totalSTCG && totalSTCG.toFixed(2)}</li>
             </ul>
-            <ul>
+            {/* <ul>
               <li>LT units</li>
               <li id="total_units">{ltcgUnits && ltcgUnits.toFixed(2)}</li>
             </ul>
             <ul>
               <li>ST units</li>
               <li id="total_units">{stcgUnits && stcgUnits.toFixed(2)}</li>
-            </ul>
+            </ul> */}
           </>
         ) : null}
-        <ul>
+        {/* <ul>
           <li>Total units alloted</li>
           <li id="total_units">{(totalUnits && totalUnits.toFixed(2)) || 0}</li>
-        </ul>
+        </ul> */}
       </div>
     </Card>
   );
